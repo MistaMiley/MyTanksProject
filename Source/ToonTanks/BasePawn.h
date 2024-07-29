@@ -40,8 +40,10 @@ private:
 	 USceneComponent		*ProjectileSpawnPoint;
 	 UPROPERTY(Category = "MovementProperties", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	 float TurretTurnRate = 200.0f;
+	 UPROPERTY(Category = "Components", VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	 class UParticleSystemComponent* OnDeathPFX;
 public:
-	ABasePawn* PlayerTank;
+	ABasePawn* PlayerTank;//Idont like it should be called Target
 	//UPROPERTY(Category = "PFX", VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	//UParticleSystemComponent* DeathPFX;
 
@@ -53,10 +55,11 @@ public:
 	{
 		return BaseMesh;
 	}
-	UCapsuleComponent *GetCapsuleComponent()
+	class UCapsuleComponent *GetCapsuleComponent()
 	{
 		return CapsuleComp;
 	}
+	void HandleDestruction();
 
 
 };

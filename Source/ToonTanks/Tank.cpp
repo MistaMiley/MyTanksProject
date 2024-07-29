@@ -26,13 +26,14 @@ ATank::ATank()
 	TankSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TankCameraArm"));
 	//attach springarm to root
 	TankSpringArm->SetupAttachment(RootComponent);
+	
 
 	FVector BarrelOffset(80, 0, 90);
 //	TankProjectileSpawnPoint->AddLocalOffset(BarrelOffset);
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("TankCamera"));
 	//		//link the spring SpawnPoint to the root
 	//	//Now link the camera to the springArm
-	//	Camera->SetupAttachment(TankSpringArm);
+		Camera->SetupAttachment(TankSpringArm);
 	PowerToLeftTrack = PowerToRightTrack = TankAdvancement = 0.f;
 };
 
@@ -80,6 +81,10 @@ void ATank::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerControllerRef = Cast<APlayerController>(GetController());
+	if (PlayerControllerRef)
+	{
+		PlayerControllerRef->SetViewTargetWithBlend(this, 2.f);
+	}
 	// Call the base class  
 	//Super::BeginPlay();
 	// 
@@ -95,6 +100,14 @@ void ATank::BeginPlay()
 		//}
 	//}
 
+}
+
+void ATank::HandleDestruction()
+{
+	Super::HandleDestruction();
+	SetActorHiddenInGame(true);//Hide daTank!
+	UE_LOG(LogTemp, Warning, TEXT("ATank::HandleDestruction Disappeared the tank"));
+	SetActorTickEnabled(false);
 }
 
 void ATank::Move(float Value)
@@ -129,7 +142,7 @@ void ATank::TurnRight(float Value)
 
 void ATank::LeftTrackPower(float Value)
 {
-	if (Value <1.f)
+	if (Value < MinTrackPower)
 	{
 		PowerToLeftTrack = Value;
 	//	Turn(Value);
@@ -139,7 +152,7 @@ void ATank::LeftTrackPower(float Value)
 
 void ATank::RightTrackPower(float Value)
 {
-	if (Value < 1.f)
+	if (Value < MinTrackPower)
 	{
 		PowerToRightTrack = Value;
 	//	Turn(Value);

@@ -2,6 +2,8 @@
 
 
 #include "HealthComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "../Public/ToonTanksGameModeBase.h"
 //IMPLEMENT CONSTRUCTOR
 UHealthComponent::UHealthComponent()
 {
@@ -16,6 +18,7 @@ void UHealthComponent::BeginPlay()
 	Health = MaxHealth;
 	Super::BeginPlay();
 
+	ToonTanksGameMode = Cast<AToonTanksGameModeBase>(UGameplayStatics::GetGameMode(this));
 
 	//add our functions  DamageTaken to owners OnTake Any Damage Event!
 		
@@ -33,6 +36,13 @@ void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDa
 		return;
 	}
 		Health -= Damage;
+		if (Health <= 0)
+		{
+			if (ToonTanksGameMode)
+			{
+				ToonTanksGameMode->ActorDied(DamagedActor);
+			}
+		}
 		UE_LOG(LogTemp, Warning, TEXT("Health= %f"), Health);
 
 	

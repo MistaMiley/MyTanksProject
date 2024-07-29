@@ -17,6 +17,7 @@ class TOONTANKS_API ATower : public ABasePawn
 	GENERATED_BODY()
 public:
 	virtual void Tick(float DeltaTime)override;
+	void HandleDestruction();
 
 	//moved begin play out of protected
 //protected:

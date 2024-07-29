@@ -8,6 +8,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "ExplosiveRound.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Particles/ParticleSystemComponent.h"
+
 
 // Sets default values
 ABasePawn::ABasePawn()
@@ -18,6 +20,8 @@ ABasePawn::ABasePawn()
 	PrimaryActorTick.bCanEverTick = true;
 	CapsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleCollider"));
 	CapsuleComp->SetupAttachment(RootComponent);
+	CapsuleComp->SetGenerateOverlapEvents(true);
+	CapsuleComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
 	BaseMesh->SetupAttachment(CapsuleComp);
@@ -35,6 +39,7 @@ ABasePawn::ABasePawn()
 		ProjectileSpawnPoint->SetupAttachment(TurretMesh);
 	
 	}
+	OnDeathPFX = CreateDefaultSubobject< UParticleSystemComponent>(TEXT("DeathPFX"));
 }
 
 void ABasePawn::RotateTurret(FVector LookAtTarget, float DeltaTime)
@@ -73,7 +78,16 @@ void ABasePawn::Fire()
 		UE_LOG(LogTemp, Warning, TEXT("FirePressed & spawn point is null!"));
 	}
 
-};
+}
+void ABasePawn::HandleDestruction()
+{
+	//play VFX& SFX
+	//UGameplayStatics::SpawnEmitterAtLocation(
+	//	this,
+	//	OnDeathPFX,
+	//	GetActorTransform(), true);
+}
+;
 
 
 

@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class TOONTANKS_API ATank : public ABasePawn
+class TOONTANKS_API ATank : public  ABasePawn
 {
 	GENERATED_BODY()
 public:
@@ -25,7 +25,7 @@ public:
 //protected:
 public:
 		virtual void BeginPlay()override;
-
+		void HandleDestruction();
 private:
 	//Speed of the  vehicle
 	UPROPERTY(Category = "MovementProperties", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -33,7 +33,8 @@ private:
 	//TurnSpeed of the  vehicle
 	UPROPERTY(Category = "MovementProperties", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float TurnRate = 200.0f;
-
+	UPROPERTY(Category = "MovementProperties", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float MinTrackPower = 0.5f;
 	void Move(float Value);
 	void Turn(float Value);
 	void TurnLeft(float Value);
@@ -51,11 +52,16 @@ private:
 	
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	//UInputAction* TriggerPullAction;
-	APlayerController *PlayerControllerRef;
+
 	//void Fire();
 public:
+	class APlayerController *PlayerControllerRef; 
+	class APlayerController* GetTankPlayerController() 
+	{ 
+		return PlayerControllerRef; 
+	}
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 };
