@@ -27,6 +27,8 @@ public:
 		virtual void BeginPlay()override;
 		void HandleDestruction();
 private:
+	UPROPERTY()
+	class UHealthComponent *CachedHealth;
 	//Speed of the  vehicle
 	UPROPERTY(Category = "MovementProperties", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float Speed = 20.0f;
@@ -34,6 +36,7 @@ private:
 	UPROPERTY(Category = "MovementProperties", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float TurnRate = 200.0f;
 	UPROPERTY(Category = "MovementProperties", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+
 	float MinTrackPower = 0.5f;
 	void Move(float Value);
 	void Turn(float Value);
@@ -50,7 +53,8 @@ private:
 	UPROPERTY(Category = "Components",	VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent	* Camera;
 	
-
+	UPROPERTY(Category = "Components", VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	class UHealthBarComponent *HealthBarWidget;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	//UInputAction* TriggerPullAction;

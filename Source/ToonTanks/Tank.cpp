@@ -8,9 +8,11 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/InputComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "HealthComponent.h"
 #include "InputActionValue.h"
+#include "HUD/HealthBarComponent.h"
 
 /* Add these include directories through the vVS gui
 #include "../../../../../Program Files/Epic Games/UE_5.3/Engine/Plugins/EnhancedInput/Source/EnhancedInput/Public/InputTriggers.h"
@@ -35,7 +37,9 @@ ATank::ATank()
 	//	//Now link the camera to the springArm
 		Camera->SetupAttachment(TankSpringArm);
 	PowerToLeftTrack = PowerToRightTrack = TankAdvancement = 0.f;
-};
+	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
+	HealthBarWidget->SetupAttachment(RootComponent);
+}
 
 //void ATank::Fire()
 //{
@@ -80,6 +84,11 @@ void ATank::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CachedHealth = FindComponentByClass<UHealthComponent>();
+	if (CachedHealth)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("cached HealthComponent"));
+	}
 	PlayerControllerRef = Cast<APlayerController>(GetController());
 	if (PlayerControllerRef)
 	{
@@ -162,6 +171,17 @@ void ATank::RightTrackPower(float Value)
 void ATank::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->Set_RightTriggerBar_Percentage(PowerToRightTrack);
+		HealthBarWidget->Set_LeftTriggerBar_Percentage(PowerToLeftTrack);
+		HealthBarWidget->Set_SpeedBar_Percentage(TankAdvancement);
+		//HealthBarWidget->Set_HealthBar_Percentage(PowerToRightTrack);
+		if (CachedHealth)
+		{
+			HealthBarWidget->Set_HealthBar_Percentage(CachedHealth->GetHealth()/ CachedHealth->GetMaxHealth());
+		}
+	}
 	//Turn(-1.f);//-1turnsleft
 	//return;
 	if (GEngine)
@@ -170,9 +190,7 @@ void ATank::Tick(float DeltaTime)
 			GEngine->AddOnScreenDebugMessage(2, -1, FColor::Magenta, FString::Printf(TEXT("<-PowerToLeftTrack:%s"), *FString::SanitizeFloat(PowerToLeftTrack)));
 			GEngine->AddOnScreenDebugMessage(3, -1, FColor::Cyan,	FString::Printf(TEXT("AbsoluteDifference%s"), *FString::SanitizeFloat(absdiff)));
 		}
-	//
-	//TurnLeft(1.f);
-	//return;
+
 	if (PowerToRightTrack > PowerToLeftTrack)
 	{
 		Turn(absdiff);
@@ -181,6 +199,7 @@ void ATank::Tick(float DeltaTime)
 	{
 		Turn(-absdiff);
 	}
+
 	//return;
 	//calculate our movement no input no movement
 	if ((PowerToLeftTrack > 0.f) && PowerToRightTrack > 0.f)
@@ -222,3 +241,4 @@ void ATank::Tick(float DeltaTime)
 	//	UE_LOG(LogTemp, Warning, TEXT("INvalidproj spawn point"));
 	}
 }
+
