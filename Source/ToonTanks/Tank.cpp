@@ -14,7 +14,7 @@
 #include "InputActionValue.h"
 #include "HUD/HealthBarComponent.h"
 
-/* Add these include directories through the vVS gui
+/* Add these include directories through the vVS gu
 #include "../../../../../Program Files/Epic Games/UE_5.3/Engine/Plugins/EnhancedInput/Source/EnhancedInput/Public/InputTriggers.h"
 #include "../../../../../Program Files/Epic Games/UE_5.3/Engine/Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h"
 */
@@ -22,12 +22,13 @@ ATank::ATank()
 	: ABasePawn()
 {
 	PlayerControllerRef = nullptr;
+	CachedHealth = nullptr;
 	absdiff = 0.f;
 
 	//create springarm
 	TankSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TankCameraArm"));
 	//attach springarm to root
-	TankSpringArm->SetupAttachment(RootComponent);
+	TankSpringArm->SetupAttachment(BaseMesh);
 	
 
 	FVector BarrelOffset(80, 0, 90);
@@ -38,7 +39,7 @@ ATank::ATank()
 		Camera->SetupAttachment(TankSpringArm);
 	PowerToLeftTrack = PowerToRightTrack = TankAdvancement = 0.f;
 	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
-	HealthBarWidget->SetupAttachment(RootComponent);
+	HealthBarWidget->SetupAttachment(BaseMesh);
 }
 
 //void ATank::Fire()
@@ -87,12 +88,15 @@ void ATank::BeginPlay()
 	CachedHealth = FindComponentByClass<UHealthComponent>();
 	if (CachedHealth)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("cached HealthComponent"));
+		UE_LOG(LogTemp, Warning, TEXT("cached the HealthComponent"));
 	}
 	PlayerControllerRef = Cast<APlayerController>(GetController());
 	if (PlayerControllerRef)
 	{
+		//PlayerControllerRef->SetViewTargetWithBlend(this, 2.f);Camera
 		PlayerControllerRef->SetViewTargetWithBlend(this, 2.f);
+		UE_LOG(LogTemp, Warning, TEXT("setting this camera target as main camera"));
+
 	}
 	// Call the base class  
 	//Super::BeginPlay();
@@ -108,7 +112,7 @@ void ATank::BeginPlay()
 		//	Subsystem->AddMappingContext(InputMapping, 0);
 		//}
 	//}
-
+	TankSpringArm->SetupAttachment(RootComponent);
 }
 
 void ATank::HandleDestruction()
