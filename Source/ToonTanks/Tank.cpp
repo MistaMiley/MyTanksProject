@@ -13,6 +13,7 @@
 #include "HealthComponent.h"
 #include "InputActionValue.h"
 #include "HUD/HealthBarComponent.h"
+#include "../ToonTanks/Public/ToonTanksGameModeBase.h"
 
 /* Add these include directories through the vVS gu
 #include "../../../../../Program Files/Epic Games/UE_5.3/Engine/Plugins/EnhancedInput/Source/EnhancedInput/Public/InputTriggers.h"
@@ -24,6 +25,7 @@ ATank::ATank()
 	PlayerControllerRef = nullptr;
 	CachedHealth = nullptr;
 	absdiff = 0.f;
+	PickupsCollected = 0;
 
 	//create springarm
 	TankSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TankCameraArm"));
@@ -84,7 +86,7 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void ATank::BeginPlay()
 {
 	Super::BeginPlay();
-
+	//PickupsCollected = 0;
 	CachedHealth = FindComponentByClass<UHealthComponent>();
 	if (CachedHealth)
 	{
@@ -121,6 +123,16 @@ void ATank::HandleDestruction()
 	SetActorHiddenInGame(true);//Hide daTank!
 	UE_LOG(LogTemp, Warning, TEXT("ATank::HandleDestruction Disappeared the tank"));
 	SetActorTickEnabled(false);
+}
+
+int32 ATank::GetNumPickupsCollected()
+{
+	return PickupsCollected;
+}
+
+void ATank::IncrementPickupCount()
+{
+	PickupsCollected++;
 }
 
 void ATank::Move(float Value)
@@ -190,9 +202,16 @@ void ATank::Tick(float DeltaTime)
 	//return;
 	if (GEngine)
 		{
+
 			GEngine->AddOnScreenDebugMessage(1, -1, FColor::Yellow, FString::Printf(TEXT("PowerToRightTrack:%s->"),*FString::SanitizeFloat(PowerToRightTrack)));
 			GEngine->AddOnScreenDebugMessage(2, -1, FColor::Magenta, FString::Printf(TEXT("<-PowerToLeftTrack:%s"), *FString::SanitizeFloat(PowerToLeftTrack)));
 			GEngine->AddOnScreenDebugMessage(3, -1, FColor::Cyan,	FString::Printf(TEXT("AbsoluteDifference%s"), *FString::SanitizeFloat(absdiff)));
+			AToonTanksGameModeBase *tanksGameModeBase = Cast<AToonTanksGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+					if (!tanksGameModeBase)return;
+
+			int32 remaining = (tanksGameModeBase->GetTotalNumberOfPickups() - PickupsCollected);
+			FString Message = FString::Printf(TEXT("collected%d of %d with %d Remaining"), PickupsCollected, tanksGameModeBase->GetTotalNumberOfPickups(), remaining);
+		GEngine->AddOnScreenDebugMessage(3, -1, FColor::Cyan,Message);
 		}
 
 	if (PowerToRightTrack > PowerToLeftTrack)

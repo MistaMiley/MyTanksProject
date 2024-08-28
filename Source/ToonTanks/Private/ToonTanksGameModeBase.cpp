@@ -7,6 +7,7 @@
 #include "../Tank.h"
 #include "../Tower.h"
 #include "ToonTanksPlayerController.h"
+#include "Item.h"
 
 void AToonTanksGameModeBase::ActorDied(AActor* DeadActor)
 {
@@ -31,9 +32,20 @@ void AToonTanksGameModeBase::ActorDied(AActor* DeadActor)
 	
 }
 
+int32 AToonTanksGameModeBase::GetTotalNumberOfPickups()
+{
+	return AItem::GetInstanceCount();
+}
+
 void AToonTanksGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+		//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AItem::StaticClass(), FoundItems);
+			
+		//TotalNumberOfPickups = FoundItems.Num();
+
 		Tank =Cast<ATank>( UGameplayStatics::GetPlayerPawn(this, 0));
 		ToonTanksPlayerController = Cast<AToonTanksPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+		
+		
 }

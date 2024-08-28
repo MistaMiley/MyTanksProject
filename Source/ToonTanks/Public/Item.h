@@ -26,6 +26,9 @@ class TOONTANKS_API AItem : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AItem();
+
+	UFUNCTION(BlueprintCallable, Category = "item")
+	static int32 GetInstanceCount();
 	/** Overlapping Sphere*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "item| Collision") 
 	class USphereComponent* CollisionVolume;
@@ -92,6 +95,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	class UNiagaraSystem* PickupEffect;
+	static int32 Item_InstanceCount;
 public:
 
 };

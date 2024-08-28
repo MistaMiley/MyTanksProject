@@ -20,7 +20,10 @@ public:
 	{
 		return TankPlayerControllerRef;
 	}
+	int32 GetTotalNumberOfPickups();
 private:
+	 TArray<class AItem*>FoundItems;
+	//int32 TotalNumberOfPickups=0;
 	class ATank* Tank;
 	class AToonTanksPlayerController* ToonTanksPlayerController;
 	APlayerController* TankPlayerControllerRef = nullptr;

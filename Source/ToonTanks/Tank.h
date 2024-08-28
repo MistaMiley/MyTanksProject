@@ -26,6 +26,8 @@ public:
 public:
 		virtual void BeginPlay()override;
 		void HandleDestruction();
+		int32 GetNumPickupsCollected();
+		void IncrementPickupCount();
 private:
 	UPROPERTY()
 	class UHealthComponent *CachedHealth;
@@ -35,6 +37,7 @@ private:
 	//TurnSpeed of the  vehicle
 	UPROPERTY(Category = "MovementProperties", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float TurnRate = 200.0f;
+	int32 PickupsCollected;
 	UPROPERTY(Category = "MovementProperties", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 
 	float MinTrackPower = 0.5f;

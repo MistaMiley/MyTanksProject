@@ -1,15 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Item.h"
+#include "Components/PrimitiveComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Actor.h"
-#include "Components/PrimitiveComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "Kismet/GameplayStatics.h"
+#include "../Tank.h"
+
+//initialise our static
+int32 AItem::Item_InstanceCount = 0;
 // Sets default values
 AItem::AItem()
 {
@@ -27,10 +30,16 @@ AItem::AItem()
 	CollisionVolume->SetGenerateOverlapEvents(true);
 	CollisionVolume->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 }
+int32 AItem::GetInstanceCount()
+{
+	return Item_InstanceCount;
+}
 // Called when the game starts or when spawned
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
+	Item_InstanceCount++;
+	UE_LOG(LogTemp, Warning,TEXT("InstanceCount =%d"), Item_InstanceCount)
 	CollisionVolume->OnComponentBeginOverlap.AddDynamic(this,&AItem::OnSphereOverlap);//who you gonna  call!
 	CollisionVolume->OnComponentEndOverlap.AddDynamic(this,&AItem::OnSphereEndOverlap);
 }
@@ -91,12 +100,25 @@ void AItem::Tick(float DeltaTime)
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("HEY!!something is happening!"));
+	if(!OtherActor) return;
+	UE_LOG(LogTemp, Warning, TEXT("HEY!!OnSphereOverlap!"));
+	//AFM 20/08/24 CAST OTHER ACTOR TO ATANK& INCREMENT PICKUPS COLLECTED
+	ATank *playerTank = Cast<ATank>(OtherActor);
+	if (playerTank)
+	{
+		playerTank->IncrementPickupCount();
+		Destroy();//outta here
+	}
 }
 
 void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	UE_LOG(LogTemp, Warning, TEXT("EndingSphereOverlap!"));
+	ATank* playerTank = Cast<ATank>(OtherActor);
+	if (playerTank)
+	{
+	//	playerTank->IncrementPickupCount();
+	}
 }
 
 
